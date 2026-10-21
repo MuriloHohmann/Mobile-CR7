@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
-// You can import supported modules from npm
 import { Card } from 'react-native-paper';
 
 export default function App() {
@@ -10,24 +9,35 @@ export default function App() {
   const [senha, setSenha] = useState('');
   const router = useRouter();
 
-  // E-mail e senha salvos no código para teste
-  const EMAIL_CORRETO = 'murilorohohmann@gmail.com';
-  const SENHA_CORRETA = 'hohmann';
-
-  const handleLogin = () => {
-    // Valida se os campos estão vazios
+  const handleLogin = async () => {
     if (!email.trim() || !senha.trim()) {
       Alert.alert('Atenção', 'Preencha todos os campos.');
       return;
     }
 
-    // Valida se o email e a senha batem com os salvos
-    if (email.trim() === EMAIL_CORRETO && senha === SENHA_CORRETA) {
-      // Se estiver correto, vai para a página de teste/sucesso
-      router.push('/teste');
-    } else {
-      // Se estiver incorreto, mostra a notificação de informações inválidas
-      Alert.alert('Erro', 'Informações inválidas! E-mail ou senha incorretos.');
+    try {
+      const response = await fetch('http://10.154.49.238:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          senha: senha,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Sucesso', data.mensagem);
+        router.push('/teste');
+      } else {
+        Alert.alert('Erro', data.mensagem || 'E-mail ou senha incorretos.');
+      }
+    } catch (error) {
+      Alert.alert('Erro de Conexão', 'Não foi possível ligar ao servidor. Verifique se o Docker está a correr.');
+      console.error(error);
     }
   };
   

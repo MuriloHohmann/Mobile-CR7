@@ -18,10 +18,7 @@ services:
     container_name: backend_app
     restart: always
     ports:
-      - "8081:8081"
-      - "19000:19000"
-      - "19001:19001"
-      - "19002:19002"
+      - "5000:5000"
     environment:
       - DB_HOST=mysql
       - DB_USER=root
@@ -29,6 +26,8 @@ services:
       - DB_NAME=meu_banco
     depends_on:
       - mysql
+    volumes:
+      - .:/app
 
 volumes:
   mysql_data:

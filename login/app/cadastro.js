@@ -28,10 +28,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
  
-
+  
   btnLogin: {
     backgroundColor: '#1b1464',
-    paddingVertical: 10,
+    top: 25,
+    paddingVertical: 25,
     paddingHorizontal: 20,
     borderRadius: 5,
     alignItems: 'center',

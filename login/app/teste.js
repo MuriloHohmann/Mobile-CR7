@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   btnLogin: {
     backgroundColor: '#1b1464',
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20,  
     borderRadius: 5,
     alignItems: 'center',
   },
