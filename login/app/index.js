@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
-import { Card } from 'react-native-paper';
-
 export default function App() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -16,7 +14,8 @@ export default function App() {
     }
 
     try {
-      const response = await fetch('http://10.154.49.238:5000/login', {
+      // Substitua pelo IP atual do PC do seu colega na rede
+      const response = await fetch('http://10.154.20.50:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +29,7 @@ export default function App() {
       const data = await response.json();
 
       if (response.ok) {
-        Alert.alert('Sucesso', data.mensagem);
+        Alert.alert('Sucesso', data.mensagem || 'Login efetuado com sucesso!');
         router.push('/teste');
       } else {
         Alert.alert('Erro', data.mensagem || 'E-mail ou senha incorretos.');
@@ -77,7 +76,6 @@ export default function App() {
           </TouchableOpacity>
         </Link>  
 
-        {/* Botão de login agora aciona a função handleLogin */}
         <TouchableOpacity style={styles.btnLogin} onPress={handleLogin}>
           <Text style={styles.btnText}>Login</Text>
         </TouchableOpacity>
@@ -112,7 +110,7 @@ const styles = StyleSheet.create({
   },
   brother: {
     position: 'absolute', 
-    bottom: 20,              
+    bottom: 20,                     
     width: '100%',
     fontSize: 18,
     fontWeight: 'bold',
@@ -127,8 +125,7 @@ const styles = StyleSheet.create({
   },
   input: {
     position: 'relative',
-    width: 1100,
-    maxWidth: 300,
+    width: 300,
     height: 40,
     top: 40,
     left: 30,
@@ -142,7 +139,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: 250,
-    maxWidth: 300,
     left: 50,
     top: 40,
     marginBottom: 30,
