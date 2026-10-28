@@ -15,7 +15,7 @@ export default function App() {
 
     try {
       // Substitua pelo IP atual do PC do seu colega na rede
-      const response = await fetch('http://10.154.20.50:5000/login', {
+      const response = await fetch('http://192.168.56.1:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
