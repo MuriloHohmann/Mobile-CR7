@@ -44,7 +44,7 @@ export default function Cadastro() {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.sabrinagoat} source={require('../assets/sabrinacarpenter.jpg')}/> 
+    
       <Text style={styles.title}>Crie sua conta</Text>
 
       <TextInput
@@ -86,12 +86,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#005ea7',
     padding: 20,
-  },
-  sabrinagoat: {
-    width: 100,  // Largura da imagem
-    height: 100, // Altura da imagem
-    marginBottom: 20, // Espaço entre a imagem e o título
-    resizeMode: 'contain',
+
   },
   title: {
     fontSize: 22,
