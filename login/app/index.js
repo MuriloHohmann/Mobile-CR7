@@ -14,8 +14,8 @@ export default function App() {
     }
 
     try {
-      // Substitua pelo IP atual do PC do seu colega na rede
-      const response = await fetch('http://10.154.20.110:5000/login', {
+      // Endpoint de Login no Flask
+      const response = await fetch('http://10.154.20.27:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,17 +29,25 @@ export default function App() {
       const data = await response.json();
 
       if (response.ok) {
-        Alert.alert('Sucesso', data.mensagem || 'Login efetuado com sucesso!');
-        router.push('/teste');
+        const tipoUsuario = data.usuario?.tipo?.toLowerCase();
+
+        // Direcionamento dinâmico baseado no tipo de usuário
+        if (tipoUsuario === 'adm' || tipoUsuario === 'admin') {
+          Alert.alert('Sucesso', 'Bem-vindo, Administrador!');
+          router.replace('/estoqueadm');
+        } else {
+          Alert.alert('Sucesso', 'Bem-vindo a Home!');
+          router.replace('/home');
+        }
       } else {
         Alert.alert('Erro', data.mensagem || 'E-mail ou senha incorretos.');
       }
     } catch (error) {
-      Alert.alert('Erro de Conexão', 'Não foi possível ligar ao servidor. Verifique se o Docker está a correr.');
+      Alert.alert('Erro de Conexão', 'Não foi possível ligar ao servidor. Verifique a conexão.');
       console.error(error);
     }
   };
-  
+
   return (
     <View style={styles.container}>
       <Image style={styles.fotofoda} source={require('../assets/boludos.png')} />
@@ -49,7 +57,7 @@ export default function App() {
       </Text>
 
       <Image style={styles.senai} source={require('../assets/Senai.jpg')} />
-      
+
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -88,10 +96,12 @@ export default function App() {
   );
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justify: 'flex-start',
     backgroundColor: '#005ea7',
     padding: 8,
   },
@@ -123,6 +133,7 @@ const styles = StyleSheet.create({
     height: 100,
     top: 30,
   },
+
   input: {
     position: 'relative',
     width: 300,

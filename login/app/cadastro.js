@@ -15,7 +15,7 @@ export default function Cadastro() {
 
     try {
       // Endpoint /cadastro configurado no Flask do seu colega
-      const response = await fetch('http://10.154.20.50:5000/cadastro', {
+      const response = await fetch('http://10.154.20.27:5000/cadastro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export default function Cadastro() {
 
   return (
     <View style={styles.container}>
-    
+
       <Text style={styles.title}>Crie sua conta</Text>
 
       <TextInput
@@ -87,6 +87,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#005ea7',
     padding: 20,
 
+  },
+  frank: {
+    left: -8,
+    width: 400,
+    height: 350,
+    top: -30,
   },
   title: {
     fontSize: 22,
