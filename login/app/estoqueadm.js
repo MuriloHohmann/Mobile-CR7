@@ -7,16 +7,16 @@ export default function EstoqueAdm() {
 
   // Exemplo de itens para visualização ADM
   const itensEstoque = [
-    { id: '1', nome: 'Chave de Fenda', quantidade: 10 },
+    { id: '1', nome: 'Chave de Fenda', quantidade: 18 },
     { id: '2', nome: 'Multímetro', quantidade: 5 },
   ];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}> Painel de Gestão (ADM)</Text>
+      <Text style={styles.titulo}>Painel de Gestão (ADM)</Text>
 
       <TouchableOpacity style={styles.btnAdicionar}>
-        <Text style={styles.btnText}>+ Adicionar Novo Item</Text>
+        <Text style={styles.btnExt}>+ Adicionar Novo Item</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -25,7 +25,7 @@ export default function EstoqueAdm() {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View>
-              <Text style={styles.itemNome}>{item.nome}</Text>
+              <Text style={styles.itemName}>{item.nome}</Text>
               <Text style={styles.itemQtd}>Qtd: {item.quantidade}</Text>
             </View>
             <View style={styles.acoesContainer}>
@@ -68,6 +68,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  btnExt: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
   card: {
     backgroundColor: 'white',
     padding: 15,
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  itemNome: {
+  itemName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   btnExcluir: {
-    backgroundColor: '#dc3545',
+    backgroundColor: '#cc3545',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 5,
@@ -117,5 +121,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 12,
-  }
+  },
 });

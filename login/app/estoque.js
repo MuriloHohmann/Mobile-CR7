@@ -21,7 +21,7 @@ export default function Estoque() {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View>
-              <Text style={styles.itemNome}>{item.nome}</Text>
+              <Text style={styles.itemName}>{item.nome}</Text>
               <Text style={styles.itemQtd}>Quantidade disponível: {item.quantidade}</Text>
             </View>
             <TouchableOpacity style={styles.btnRetirar}>
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  itemNome: {
+  itemName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
@@ -91,5 +91,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 12,
-  }
+  },
 });

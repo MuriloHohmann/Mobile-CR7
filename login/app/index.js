@@ -15,7 +15,7 @@ export default function App() {
 
     try {
       // Endpoint de Login no Flask
-      const response = await fetch('http://10.154.20.27:5000/login', {
+      const response = await fetch('http://10.154.20.32:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

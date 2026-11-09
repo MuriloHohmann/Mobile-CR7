@@ -15,7 +15,7 @@ export default function Cadastro() {
 
     try {
       // Endpoint /cadastro configurado no Flask do seu colega
-      const response = await fetch('http://10.154.20.27:5000/cadastro', {
+      const response = await fetch('http://10.154.20.32:5000/cadastro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
