@@ -15,7 +15,7 @@ export default function App() {
 
     try {
       // Endpoint de Login no Flask
-      const response = await fetch('http://10.154.20.32:5000/login', {
+      const response = await fetch('http://10.154.20.175:5000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export default function App() {
         // Direcionamento dinâmico baseado no tipo de usuário
         if (tipoUsuario === 'adm' || tipoUsuario === 'admin') {
           Alert.alert('Sucesso', 'Bem-vindo, Administrador!');
-          router.replace('/estoqueadm');
+          router.replace('/homeadm');
         } else {
           Alert.alert('Sucesso', 'Bem-vindo a Home!');
           router.replace('/home');

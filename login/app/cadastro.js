@@ -15,7 +15,7 @@ export default function Cadastro() {
 
     try {
       // Endpoint /cadastro configurado no Flask do seu colega
-      const response = await fetch('http://10.154.20.32:5000/cadastro', {
+      const response = await fetch('http://10.154.20.175:5000/cadastro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,6 +44,10 @@ export default function Cadastro() {
 
   return (
     <View style={styles.container}>
+      <Image 
+      source={require('../assets/sabrina.png')} 
+      style={styles.sabrina} 
+    />
 
       <Text style={styles.title}>Crie sua conta</Text>
 
@@ -88,11 +92,11 @@ const styles = StyleSheet.create({
     padding: 20,
 
   },
-  frank: {
-    left: -8,
-    width: 400,
-    height: 350,
-    top: -30,
+  sabrina: {
+    left: -2,
+    width: 387,
+    height: 380,
+    top: -60,
   },
   title: {
     fontSize: 22,

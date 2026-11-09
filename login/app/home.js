@@ -28,7 +28,7 @@ export default function Home() {
         {/* Botão de Sair / Voltar ao Login */}
         <TouchableOpacity 
           style={styles.btnLogout} 
-          onPress={() => router.replace('/index.js')}
+          onPress={() => router.replace('/')}
         >
           <Text style={styles.btnLogoutText}>Sair</Text>
         </TouchableOpacity>
