@@ -4,18 +4,32 @@ import {
   FlatList, StyleSheet, Alert 
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Lembre-se de trocar pelo IP correto da sua máquina
 const API_URL = 'http://10.154.20.215:5000/produtos';
 
 export default function EstoqueComum() {
   const router = useRouter();
   const [produtos, setProdutos] = useState([]);
+  const [usuarioId, setUsuarioId] = useState(null);
 
-  // Carrega os produtos ao abrir a tela
   useEffect(() => {
+    carregarDadosUsuario();
     buscarProdutos();
   }, []);
+
+  const carregarDadosUsuario = async () => {
+    try {
+      // Tenta recuperar o ID do usuário logado armazenado no AsyncStorage
+      const usuarioSalvo = await AsyncStorage.getItem('usuarioLogado');
+      if (usuarioSalvo) {
+        const parsed = JSON.parse(usuarioSalvo);
+        setUsuarioId(parsed.id);
+      }
+    } catch (error) {
+      console.log("Erro ao carregar usuário:", error);
+    }
+  };
 
   const buscarProdutos = async () => {
     try {
@@ -27,10 +41,14 @@ export default function EstoqueComum() {
     }
   };
 
-  // Função para retirar quantidade do produto
   const retirarProduto = async (id, quantidadeAtual) => {
     if (quantidadeAtual <= 0) {
       Alert.alert("Atenção", "Este produto já está esgotado.");
+      return;
+    }
+
+    if (!usuarioId) {
+      Alert.alert("Erro", "ID do usuário não identificado. Faça login novamente.");
       return;
     }
 
@@ -40,7 +58,10 @@ export default function EstoqueComum() {
       const response = await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: novaQtd }),
+        body: JSON.stringify({ 
+          quantidade: novaQtd,
+          usuario_id: usuarioId // Envia o ID para registrar na tabela movimentacao
+        }),
       });
 
       if (response.ok) {
@@ -55,20 +76,17 @@ export default function EstoqueComum() {
 
   const renderItem = ({ item }) => (
     <View style={styles.linhaTabela}>
-      {/* Informações do Produto (Nome e Descrição) */}
       <View style={{ flex: 2 }}>
         <Text style={styles.nomeProduto}>{item.nome}</Text>
         {item.descricao ? <Text style={styles.descricaoText}>{item.descricao}</Text> : null}
         {item.categoria ? <Text style={styles.categoria}>{item.categoria}</Text> : null}
       </View>
 
-      {/* Quantidade Atual */}
       <View style={styles.containerQtd}>
         <Text style={styles.valorQtd}>{item.quantidade}</Text>
         <Text style={styles.labelQtd}>disp.</Text>
       </View>
 
-      {/* Botão de Retirar */}
       <TouchableOpacity 
         style={styles.btnRetirar} 
         onPress={() => retirarProduto(item.id, item.quantidade)}
@@ -80,7 +98,6 @@ export default function EstoqueComum() {
 
   return (
     <View style={styles.container}>
-      {/* Navbar Superior (Mesmo padrão) */}
       <View style={styles.navbar}>
         <Text style={styles.navTitulo}>Almoxarifado</Text>
         <TouchableOpacity onPress={() => router.back()}>
@@ -88,14 +105,12 @@ export default function EstoqueComum() {
         </TouchableOpacity>
       </View>
 
-      {/* Cabeçalho da Lista */}
       <View style={styles.cabecalhoTabela}>
         <Text style={[styles.textoCabecalho, { flex: 2 }]}>Produto / Descrição</Text>
         <Text style={[styles.textoCabecalho, { flex: 1, textAlign: 'center' }]}>Qtd</Text>
         <Text style={[styles.textoCabecalho, { width: 80, textAlign: 'center' }]}>Ação</Text>
       </View>
 
-      {/* Lista de Produtos */}
       <FlatList
         data={produtos}
         keyExtractor={(item) => item.id.toString()}

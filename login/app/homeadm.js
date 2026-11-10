@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function AdmHome() {
@@ -7,54 +7,57 @@ export default function AdmHome() {
 
   return (
     <ScrollView style={styles.body}>
-      {/* Navbar do Administrador (Bootstrap #192a6b) */}
+      {/* Navbar do Administrador */}
       <View style={styles.navbar}>
-        <View style={styles.containerFluid}>
-          <TouchableOpacity 
-            style={styles.navItem} 
-            onPress={() => alert('Você já está no Painel ADM')}
-          >
-            <Text style={[styles.navLink, styles.active]}>Home ADM</Text>
-          </TouchableOpacity>
+        {/* Linha superior: Abas principais + Botão Sair */}
+        <View style={styles.navTopRow}>
+          <View style={styles.containerFluid}>
+            <TouchableOpacity 
+              style={styles.navItem} 
+              onPress={() => alert('Você já está no Painel ADM')}
+            >
+              <Text style={[styles.navLink, styles.active]}>Home ADM</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.navItem} 
-            onPress={() => router.push('/estoqueadm')}
-          >
-            <Text style={styles.navLink}>Estoque ADM</Text>
-          </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.navItem} 
+              onPress={() => router.push('/estoqueadm')}
+            >
+              <Text style={styles.navLink}>Estoque ADM</Text>
+            </TouchableOpacity>
 
+            <TouchableOpacity 
+              style={styles.navItem} 
+              onPress={() => router.push('/movimentacoes')}
+            >
+              <Text style={styles.navLink}>Movimentações</Text>
+            </TouchableOpacity>
+          </View>
+          
           <TouchableOpacity 
-            style={styles.navItem} 
-            onPress={() => router.push('/movimentacoes')}
+            style={styles.btnLogout} 
+            onPress={() => router.replace('/')}
           >
-            <Text style={styles.navLink}>Movimentações</Text>
+            <Text style={styles.btnLogoutText}>Sair</Text>
           </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem}
-          onPress={() => router.push('/cadastroadm')}
->
-          <Text style={styles.cadastroadm}>Cadastrar Usuário</Text>
-        </TouchableOpacity>
         </View>
 
-        
-        <TouchableOpacity 
-          style={styles.btnLogout} 
-          onPress={() => router.replace('/')}
-        >
-          <Text style={styles.btnLogoutText}>Sair</Text>
-        </TouchableOpacity>
+        {/* Linha inferior: Botão de Cadastrar Usuário */}
+        <View style={styles.navBottomRow}>
+          <TouchableOpacity 
+            style={styles.btnCadastrar}
+            onPress={() => router.push('/cadastroadm')}
+          >
+            <Text style={styles.cadastroadmText}>+ Cadastrar Usuário</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Conteúdo do Painel Administrativo */}
       <View style={styles.content}>
         <Text style={styles.welcomeText}>Painel de Controle - Administrador</Text>
         <Text style={styles.subText}>E ESSA FOI A EQUIPE REPRESENTANTE DO NOSSO APP!</Text>
-        
       </View>
-     
     </ScrollView>
   );
 }
@@ -64,42 +67,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  industria: {
-    left: -2,
-    width: 387,
-    height: 380,
-    top: -60,
-  },
   navbar: {
     backgroundColor: '#192a6b',
-    paddingVertical: 55,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 15 : 45,
+    paddingBottom: 15,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
+  navTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   containerFluid: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 15,
+    gap: 12,
   },
   navItem: {
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   navLink: {
     color: 'rgba(255, 255, 255, 0.75)',
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '500',
-  },
-  cadastroadm: {
-    top: 30,
-    color: 'rgba(255, 255, 255, 0.75)',
-    left: -182,
   },
   active: {
     color: '#ffffff',
@@ -110,13 +106,31 @@ const styles = StyleSheet.create({
   btnLogout: {
     backgroundColor: '#e74c3c',
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: 5,
   },
   btnLogoutText: {
     color: '#ffffff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 12,
+  },
+  navBottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.88)',
+    paddingTop: 10,
+  },
+  btnCadastrar: {
+    backgroundColor: 'rgba(26, 206, 20, 0.84)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+  },
+  cadastroadmText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '600',
   },
   content: {
     flex: 1,

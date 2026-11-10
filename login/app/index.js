@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Link, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
   const [email, setEmail] = useState('');
@@ -29,6 +30,9 @@ export default function App() {
       const data = await response.json();
 
       if (response.ok) {
+        // Guarda os dados do utilizador logado (incluindo o ID) para o histórico funcionar no estoque
+        await AsyncStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
+
         const tipoUsuario = data.usuario?.tipo?.toLowerCase();
 
         // Direcionamento dinâmico baseado no tipo de usuário
@@ -96,8 +100,6 @@ export default function App() {
   );
 }
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
   },
   brother: {
     position: 'absolute', 
-    bottom: 20,                     
+    bottom: 20,                          
     width: '100%',
     fontSize: 18,
     fontWeight: 'bold',
@@ -133,7 +135,6 @@ const styles = StyleSheet.create({
     height: 100,
     top: 30,
   },
-
   input: {
     position: 'relative',
     width: 300,

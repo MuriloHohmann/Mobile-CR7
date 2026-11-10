@@ -131,7 +131,7 @@ def listar_produtos():
         if connection:
             connection.close()
 
-# 2. Adicionar novo produto
+# 2. Adicionar novo produto (com registo de movimentação inicial se aplicável)
 @app.route('/produtos', methods=['POST'])
 def adicionar_produto():
     dados = request.get_json()
@@ -139,9 +139,10 @@ def adicionar_produto():
         return jsonify({"mensagem": "Requisição inválida ou sem JSON!"}), 400
 
     nome = dados.get('nome')
-    quantidade = dados.get('quantidade', 0)
+    quantidade = int(dados.get('quantidade', 0))
     categoria = dados.get('categoria', '')
     descricao = dados.get('descricao', '')
+    usuario_id = dados.get('usuario_id')
 
     if not nome:
         return jsonify({"mensagem": "O nome do produto é obrigatório!"}), 400
@@ -150,8 +151,14 @@ def adicionar_produto():
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            sql = "INSERT INTO produto (nome, descricao, quantidade, categoria) VALUES (%s, %s, %s, %s)"
-            cursor.execute(sql, (nome, descricao, quantidade, categoria))
+            sql_produto = "INSERT INTO produto (nome, descricao, quantidade, categoria) VALUES (%s, %s, %s, %s)"
+            cursor.execute(sql_produto, (nome, descricao, quantidade, categoria))
+            produto_id = cursor.lastrowid
+
+            if quantidade > 0 and usuario_id:
+                sql_mov = "INSERT INTO movimentacao (produto_id, usuario_id, tipo, quantidade) VALUES (%s, %s, 'entrada', %s)"
+                cursor.execute(sql_mov, (produto_id, usuario_id, quantidade))
+
             connection.commit()
         return jsonify({"status": "sucesso", "mensagem": "Produto adicionado com sucesso!"}), 201
     except Exception as e:
@@ -161,7 +168,7 @@ def adicionar_produto():
         if connection:
             connection.close()
 
-# 3. Atualizar apenas a quantidade do produto
+# 3. Atualizar quantidade e registar movimentação automaticamente (Entrada ou Saída)
 @app.route('/produtos/<int:id>', methods=['PUT'])
 def atualizar_quantidade(id):
     dados = request.get_json()
@@ -169,6 +176,8 @@ def atualizar_quantidade(id):
         return jsonify({"mensagem": "Requisição inválida ou sem JSON!"}), 400
 
     nova_quantidade = dados.get('quantidade')
+    usuario_id = dados.get('usuario_id')
+
     if nova_quantidade is None:
         return jsonify({"mensagem": "A quantidade é obrigatória!"}), 400
 
@@ -176,9 +185,26 @@ def atualizar_quantidade(id):
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
+            cursor.execute("SELECT quantidade FROM produto WHERE id = %s", (id,))
+            produto_atual = cursor.fetchone()
+            
+            if not produto_atual:
+                return jsonify({"mensagem": "Produto não encontrado!"}), 404
+
+            qtd_antiga = produto_atual['quantidade']
+            diferenca = nova_quantidade - qtd_antiga
+
+            if diferenca != 0 and usuario_id:
+                tipo_mov = 'entrada' if diferenca > 0 else 'saida'
+                qtd_mov = abs(diferenca)
+
+                sql_mov = "INSERT INTO movimentacao (produto_id, usuario_id, tipo, quantidade) VALUES (%s, %s, %s, %s)"
+                cursor.execute(sql_mov, (id, usuario_id, tipo_mov, qtd_mov))
+
             cursor.execute("UPDATE produto SET quantidade = %s WHERE id = %s", (nova_quantidade, id))
             connection.commit()
-        return jsonify({"status": "sucesso", "mensagem": "Quantidade atualizada!"}), 200
+
+        return jsonify({"status": "sucesso", "mensagem": "Quantidade atualizada e movimentação registada!"}), 200
     except Exception as e:
         print("ERRO AO ATUALIZAR QUANTIDADE:", str(e))
         return jsonify({"status": "erro", "detalhes": str(e)}), 500
@@ -208,7 +234,6 @@ def deletar_produto(id):
 # ROTAS DE MOVIMENTAÇÕES
 # ==========================================
 
-# Listar histórico de movimentações com produto e utilizador
 @app.route('/movimentacoes', methods=['GET'])
 def listar_movimentacoes():
     connection = None
