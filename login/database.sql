@@ -13,10 +13,6 @@ VALUES ('murilorohohmann@gmail.com', 'hohmann', 'admin');
 
 SELECT * FROM usuario;
 
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'suasenha123';
-ALTER USER 'root'@'%' IDENTIFIED BY 'suasenha123';
-FLUSH PRIVILEGES;
-
 -- Tabela de produtos do almoxarifado
 CREATE TABLE IF NOT EXISTS produto (
     id INT AUTO_INCREMENT PRIMARY KEY,

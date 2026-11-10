@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function AdmHome() {
@@ -14,7 +14,7 @@ export default function AdmHome() {
             style={styles.navItem} 
             onPress={() => alert('Você já está no Painel ADM')}
           >
-            <Text style={[styles.navLink, styles.active]}>Início ADM</Text>
+            <Text style={[styles.navLink, styles.active]}>Home ADM</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -30,9 +30,16 @@ export default function AdmHome() {
           >
             <Text style={styles.navLink}>Movimentações</Text>
           </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.navItem}
+          onPress={() => router.push('/cadastroadm')}
+>
+          <Text style={styles.cadastroadm}>Cadastrar Usuário</Text>
+        </TouchableOpacity>
         </View>
 
-        {/* Botão de Sair / Voltar ao Login */}
+        
         <TouchableOpacity 
           style={styles.btnLogout} 
           onPress={() => router.replace('/')}
@@ -44,8 +51,10 @@ export default function AdmHome() {
       {/* Conteúdo do Painel Administrativo */}
       <View style={styles.content}>
         <Text style={styles.welcomeText}>Painel de Controle - Administrador</Text>
-        <Text style={styles.subText}>Utilize a barra de navegação superior para gerenciar o estoque ou consultar as movimentações.</Text>
+        <Text style={styles.subText}>E ESSA FOI A EQUIPE REPRESENTANTE DO NOSSO APP!</Text>
+        
       </View>
+     
     </ScrollView>
   );
 }
@@ -55,9 +64,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+  industria: {
+    left: -2,
+    width: 387,
+    height: 380,
+    top: -60,
+  },
   navbar: {
     backgroundColor: '#192a6b',
-    paddingVertical: 12,
+    paddingVertical: 55,
     paddingHorizontal: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -78,8 +93,13 @@ const styles = StyleSheet.create({
   },
   navLink: {
     color: 'rgba(255, 255, 255, 0.75)',
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '500',
+  },
+  cadastroadm: {
+    top: 30,
+    color: 'rgba(255, 255, 255, 0.75)',
+    left: -182,
   },
   active: {
     color: '#ffffff',

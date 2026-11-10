@@ -60,13 +60,12 @@ def login():
             usuario = cursor.fetchone()
 
         if usuario:
-            # Obtém o tipo do usuário do banco de dados (padrão 'comum' se não existir)
             tipo_usuario = usuario.get('tipo', 'comum')
 
             return jsonify({
                 "status": "sucesso", 
                 "mensagem": "Login efetuado com sucesso!", 
-                "tipo": tipo_usuario, # Informa explicitamente se é admin ou comum
+                "tipo": tipo_usuario, 
                 "usuario": usuario
             }), 200
         else:
@@ -109,6 +108,132 @@ def cadastro():
     finally:
         if connection:
             connection.close()
+
+
+# ==========================================
+# ROTAS DE PRODUTOS (ALMOXARIFADO)
+# ==========================================
+
+# 1. Listar todos os produtos
+@app.route('/produtos', methods=['GET'])
+def listar_produtos():
+    connection = None
+    try:
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id, nome, descricao, quantidade, categoria FROM produto ORDER BY id DESC")
+            produtos = cursor.fetchall()
+        return jsonify(produtos), 200
+    except Exception as e:
+        print("ERRO AO LISTAR PRODUTOS:", str(e))
+        return jsonify({"status": "erro", "detalhes": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+# 2. Adicionar novo produto
+@app.route('/produtos', methods=['POST'])
+def adicionar_produto():
+    dados = request.get_json()
+    if not dados:
+        return jsonify({"mensagem": "Requisição inválida ou sem JSON!"}), 400
+
+    nome = dados.get('nome')
+    quantidade = dados.get('quantidade', 0)
+    categoria = dados.get('categoria', '')
+    descricao = dados.get('descricao', '')
+
+    if not nome:
+        return jsonify({"mensagem": "O nome do produto é obrigatório!"}), 400
+
+    connection = None
+    try:
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO produto (nome, descricao, quantidade, categoria) VALUES (%s, %s, %s, %s)"
+            cursor.execute(sql, (nome, descricao, quantidade, categoria))
+            connection.commit()
+        return jsonify({"status": "sucesso", "mensagem": "Produto adicionado com sucesso!"}), 201
+    except Exception as e:
+        print("ERRO AO ADICIONAR PRODUTO:", str(e))
+        return jsonify({"status": "erro", "detalhes": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+# 3. Atualizar apenas a quantidade do produto
+@app.route('/produtos/<int:id>', methods=['PUT'])
+def atualizar_quantidade(id):
+    dados = request.get_json()
+    if not dados:
+        return jsonify({"mensagem": "Requisição inválida ou sem JSON!"}), 400
+
+    nova_quantidade = dados.get('quantidade')
+    if nova_quantidade is None:
+        return jsonify({"mensagem": "A quantidade é obrigatória!"}), 400
+
+    connection = None
+    try:
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE produto SET quantidade = %s WHERE id = %s", (nova_quantidade, id))
+            connection.commit()
+        return jsonify({"status": "sucesso", "mensagem": "Quantidade atualizada!"}), 200
+    except Exception as e:
+        print("ERRO AO ATUALIZAR QUANTIDADE:", str(e))
+        return jsonify({"status": "erro", "detalhes": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+# 4. Remover produto
+@app.route('/produtos/<int:id>', methods=['DELETE'])
+def deletar_produto(id):
+    connection = None
+    try:
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM produto WHERE id = %s", (id,))
+            connection.commit()
+        return jsonify({"status": "sucesso", "mensagem": "Produto removido!"}), 200
+    except Exception as e:
+        print("ERRO AO REMOVER PRODUTO:", str(e))
+        return jsonify({"status": "erro", "detalhes": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+
+# ==========================================
+# ROTAS DE MOVIMENTAÇÕES
+# ==========================================
+
+# Listar histórico de movimentações com produto e utilizador
+@app.route('/movimentacoes', methods=['GET'])
+def listar_movimentacoes():
+    connection = None
+    try:
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            sql = """
+                SELECT m.id, p.nome AS produto_nome, u.email AS usuario_email, 
+                       m.tipo, m.quantidade, 
+                       DATE_FORMAT(m.data_movimentacao, '%d/%m/%Y %H:%i') AS data
+                FROM movimentacao m
+                JOIN produto p ON m.produto_id = p.id
+                JOIN usuario u ON m.usuario_id = u.id
+                ORDER BY m.id DESC
+            """
+            cursor.execute(sql)
+            movimentacoes = cursor.fetchall()
+        return jsonify(movimentacoes), 200
+    except Exception as e:
+        print("ERRO AO LISTAR MOVIMENTACOES:", str(e))
+        return jsonify({"status": "erro", "detalhes": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=5000, debug=True)
