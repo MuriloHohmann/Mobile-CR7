@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const API_URL = 'http://10.154.20.188:5000/cadastro';
+const API_URL = 'http://10.154.20.150:5000/cadastro';
 
 export default function CadastroAdm() {
   const router = useRouter();

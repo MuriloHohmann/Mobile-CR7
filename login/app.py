@@ -90,7 +90,7 @@ def login():
         if connection:
             connection.close()
 
-# Rota para Registar / Cadastrar Utilizador (Com criptografia bcrypt)
+# Rota para Registrar / Cadastrar Utilizador Comum (Com criptografia bcrypt)
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
     data = request.get_json()
@@ -122,6 +122,42 @@ def cadastro():
 
     except Exception as e:
         print("ERRO NO CADASTRO:", str(e))
+        return jsonify({"status": "erro", "detalhes": str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
+# Rota para Registrar / Cadastrar Administrador (Com criptografia bcrypt)
+@app.route('/cadastroadm', methods=['POST'])
+def cadastroadm():
+    data = request.get_json()
+    if not data:
+        return jsonify({"mensagem": "Requisição inválida ou sem JSON!"}), 400
+
+    email = data.get('email')
+    senha = data.get('senha')
+    tipo = data.get('tipo', 'admin')
+
+    if not email or not senha:
+        return jsonify({"mensagem": "Preencha todos os campos!"}), 400
+
+    # 1. Gerar o hash seguro da senha usando bcrypt
+    salt = bcrypt.gensalt()
+    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), salt)
+    senha_hash_str = senha_hash.decode('utf-8')
+
+    connection = None
+    try:
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO usuario (email, senha, tipo) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (email, senha_hash_str, tipo))
+            connection.commit()
+
+        return jsonify({"status": "sucesso", "mensagem": "Administrador registado com sucesso!"}), 201
+
+    except Exception as e:
+        print("ERRO NO CADASTRO ADMIN:", str(e))
         return jsonify({"status": "erro", "detalhes": str(e)}), 500
     finally:
         if connection:

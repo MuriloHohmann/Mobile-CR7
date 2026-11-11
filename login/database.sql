@@ -9,7 +9,7 @@ CREATE TABLE usuario (
 );
 
 INSERT INTO usuario (email, senha, tipo) 
-VALUES ('murilorohohmann@gmail.com', 'hohmann', 'admin');
+VALUES ('murilorohohmann@gmail.com', '$2b$12$h1D.p34Hh1VCipplbNtCreYFrirTHNkYL.p3ofZwpkGZgT/BlBv8O', 'admin');
 
 SELECT * FROM usuario;
 

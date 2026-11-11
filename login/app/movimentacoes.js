@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const API_URL = 'http://10.154.20.188:5000/movimentacoes';
+const API_URL = 'http://10.154.20.150:5000/movimentacoes';
 
 export default function Movimentacoes() {
   const router = useRouter();

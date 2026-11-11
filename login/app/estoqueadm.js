@@ -6,7 +6,7 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://10.154.20.188:5000/produtos';
+const API_URL = 'http://10.154.20.150:5000/produtos';
 
 export default function EstoqueAdm() {
   const router = useRouter();

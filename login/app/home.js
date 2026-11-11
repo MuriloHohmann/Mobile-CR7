@@ -1,12 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, StatusBar, ImageBackground, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, StatusBar, ImageBackground, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
+
+const { width } = Dimensions.get('window');
 
 export default function Home() {
   const router = useRouter();
 
   return (
-    <ScrollView style={styles.body}>
+    <ScrollView style={styles.body} contentContainerStyle={{ flexGrow: 1 }}>
       {/* Navbar padronizada idêntica à outra tela */}
       <View style={styles.navbar}>
         <View style={styles.containerFluid}>
@@ -34,24 +36,21 @@ export default function Home() {
         </TouchableOpacity>
       </View>
 
-      {/* Conteúdo Funcional */}
-      <View style={styles.content}>
-        {/* Espaço livre para adicionar novos elementos e telas do TCC */}
-      </View>
+      
       <ImageBackground 
         source={require('../assets/industria.png')} 
         style={styles.contentBackground}
         imageStyle={styles.imageStyle}
       >
-        {/* Overlay para escurecer levemente a foto de fundo e destacar os textos e a foto */}
         <View style={styles.overlay}>
-          <Text style={styles.welcomeText}>Administrador</Text>
+          <Text style={styles.welcomeText}>Seja bem vindo a home do Almoxarifado!</Text>
           <Text style={styles.subText}>E ESSA FOI A EQUIPE REPRESENTANTE DO NOSSO APP!</Text>
           
-          {/* Foto da equipe posisionada exatamente abaixo dos textos */}
+          
           <Image 
             source={require('../assets/us.jpg')} 
             style={styles.swag} 
+            resizeMode="cover"
           />
         </View>
       </ImageBackground>
@@ -66,9 +65,8 @@ const styles = StyleSheet.create({
   },
   navbar: {
     backgroundColor: '#192a6b',
-    // Altura e espaçamento seguros idênticos à outra tela para afastar das notificações
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) + 20 : 55,
-    paddingBottom: 22,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) + 12 : 45,
+    paddingBottom: 16,
     paddingHorizontal: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -78,6 +76,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    zIndex: 10,
   },
   containerFluid: {
     flexDirection: 'row',
@@ -109,9 +108,40 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
-  content: {
+  contentBackground: {
+    flex: 1,
+    width: '100%',
+  },
+  imageStyle: {
+    resizeMode: 'cover',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 24,
+    paddingBottom: 40,
+    alignItems: 'center',
+  },
+  welcomeText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  subText: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  swag: {
+    width: width - 40,
+    height: (width - 40) * 1.1,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#192a6b',
   },
 });
