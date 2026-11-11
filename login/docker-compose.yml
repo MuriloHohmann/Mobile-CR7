@@ -31,7 +31,8 @@ services:
       - DB_PASSWORD=rootpassword
       - DB_NAME=CR7GOAT
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     volumes:
       - .:/app
 

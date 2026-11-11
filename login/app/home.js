@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, StatusBar, ImageBackground, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
 
   return (
     <ScrollView style={styles.body}>
-      {/* Navbar do Bootstrap adaptada (#192a6b) */}
+      {/* Navbar padronizada idêntica à outra tela */}
       <View style={styles.navbar}>
         <View style={styles.containerFluid}>
           <TouchableOpacity 
@@ -38,6 +38,23 @@ export default function Home() {
       <View style={styles.content}>
         {/* Espaço livre para adicionar novos elementos e telas do TCC */}
       </View>
+      <ImageBackground 
+        source={require('../assets/industria.png')} 
+        style={styles.contentBackground}
+        imageStyle={styles.imageStyle}
+      >
+        {/* Overlay para escurecer levemente a foto de fundo e destacar os textos e a foto */}
+        <View style={styles.overlay}>
+          <Text style={styles.welcomeText}>Administrador</Text>
+          <Text style={styles.subText}>E ESSA FOI A EQUIPE REPRESENTANTE DO NOSSO APP!</Text>
+          
+          {/* Foto da equipe posisionada exatamente abaixo dos textos */}
+          <Image 
+            source={require('../assets/us.jpg')} 
+            style={styles.swag} 
+          />
+        </View>
+      </ImageBackground>
     </ScrollView>
   );
 }
@@ -49,7 +66,9 @@ const styles = StyleSheet.create({
   },
   navbar: {
     backgroundColor: '#192a6b',
-    paddingVertical: 12,
+    // Altura e espaçamento seguros idênticos à outra tela para afastar das notificações
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 24) + 20 : 55,
+    paddingBottom: 22,
     paddingHorizontal: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -66,7 +85,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   navItem: {
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   navLink: {
     color: 'rgba(255, 255, 255, 0.75)',

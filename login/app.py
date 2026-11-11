@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pymysql
 import os
+import bcrypt
 
 app = Flask(__name__)
 CORS(app)
@@ -38,7 +39,7 @@ def status():
         if connection:
             connection.close()
 
-# Rota para fazer Login
+# Rota para fazer Login (Com validação bcrypt)
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -55,19 +56,30 @@ def login():
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            sql = "SELECT * FROM usuario WHERE email = %s AND senha = %s"
-            cursor.execute(sql, (email, senha))
+            # Buscamos o usuário pelo e-mail
+            sql = "SELECT * FROM usuario WHERE email = %s"
+            cursor.execute(sql, (email,))
             usuario = cursor.fetchone()
 
         if usuario:
-            tipo_usuario = usuario.get('tipo', 'comum')
+            senha_hash_banco = usuario.get('senha')
+            
+            # Verifica se a senha digitada confere com o hash do banco
+            senha_valida = bcrypt.checkpw(
+                senha.encode('utf-8'), 
+                senha_hash_banco.encode('utf-8')
+            )
 
-            return jsonify({
-                "status": "sucesso", 
-                "mensagem": "Login efetuado com sucesso!", 
-                "tipo": tipo_usuario, 
-                "usuario": usuario
-            }), 200
+            if senha_valida:
+                tipo_usuario = usuario.get('tipo', 'comum')
+                return jsonify({
+                    "status": "sucesso", 
+                    "mensagem": "Login efetuado com sucesso!", 
+                    "tipo": tipo_usuario, 
+                    "usuario": usuario
+                }), 200
+            else:
+                return jsonify({"status": "erro", "mensagem": "E-mail ou senha incorretos!"}), 401
         else:
             return jsonify({"status": "erro", "mensagem": "E-mail ou senha incorretos!"}), 401
             
@@ -78,7 +90,7 @@ def login():
         if connection:
             connection.close()
 
-# Rota para Registar / Cadastrar Utilizador
+# Rota para Registar / Cadastrar Utilizador (Com criptografia bcrypt)
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
     data = request.get_json()
@@ -92,12 +104,18 @@ def cadastro():
     if not email or not senha:
         return jsonify({"mensagem": "Preencha todos os campos!"}), 400
 
+    # 1. Gerar o hash seguro da senha usando bcrypt
+    salt = bcrypt.gensalt()
+    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), salt)
+    senha_hash_str = senha_hash.decode('utf-8')
+
     connection = None
     try:
         connection = get_db_connection()
         with connection.cursor() as cursor:
+            # Salvamos o 'senha_hash_str' em vez da senha pura
             sql = "INSERT INTO usuario (email, senha, tipo) VALUES (%s, %s, %s)"
-            cursor.execute(sql, (email, senha, tipo))
+            cursor.execute(sql, (email, senha_hash_str, tipo))
             connection.commit()
 
         return jsonify({"status": "sucesso", "mensagem": "Utilizador registado com sucesso!"}), 201
@@ -114,7 +132,6 @@ def cadastro():
 # ROTAS DE PRODUTOS (ALMOXARIFADO)
 # ==========================================
 
-# 1. Listar todos os produtos
 @app.route('/produtos', methods=['GET'])
 def listar_produtos():
     connection = None
@@ -131,7 +148,6 @@ def listar_produtos():
         if connection:
             connection.close()
 
-# 2. Adicionar novo produto (com registo de movimentação inicial se aplicável)
 @app.route('/produtos', methods=['POST'])
 def adicionar_produto():
     dados = request.get_json()
@@ -168,7 +184,6 @@ def adicionar_produto():
         if connection:
             connection.close()
 
-# 3. Atualizar quantidade e registar movimentação automaticamente (Entrada ou Saída)
 @app.route('/produtos/<int:id>', methods=['PUT'])
 def atualizar_quantidade(id):
     dados = request.get_json()
@@ -212,7 +227,6 @@ def atualizar_quantidade(id):
         if connection:
             connection.close()
 
-# 4. Remover produto
 @app.route('/produtos/<int:id>', methods=['DELETE'])
 def deletar_produto(id):
     connection = None

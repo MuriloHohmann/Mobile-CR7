@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, Text, FlatList, StyleSheet, TouchableOpacity 
-} from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const API_URL = 'http://10.154.20.215:5000/movimentacoes';
+const API_URL = 'http://10.154.20.188:5000/movimentacoes';
 
 export default function Movimentacoes() {
   const router = useRouter();
@@ -74,6 +72,12 @@ export default function Movimentacoes() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         ListEmptyComponent={<Text style={styles.vazio}>Nenhuma movimentação registada.</Text>}
+        ListFooterComponent={
+          <Image 
+            source={require('../assets/industria.png')} 
+            style={styles.fotoINDUSTRIA}
+          />
+        }
       />
     </View>
   );
@@ -85,7 +89,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1e293b',
+    backgroundColor: '#192a6b',
     paddingTop: 45,
     paddingBottom: 15,
     paddingHorizontal: 20,
@@ -126,4 +130,11 @@ const styles = StyleSheet.create({
   },
   valorQtd: { fontSize: 15, fontWeight: 'bold' },
   vazio: { textAlign: 'center', marginTop: 30, color: '#64748b' },
+  // Estilo limpo apenas para a imagem cobrir tudo perfeitamente
+  fotoINDUSTRIA: {
+    width: '100%',
+    height: 420, // Você pode aumentar ou diminuir essa altura se preferir
+    resizeMode: 'cover',
+    marginTop: 10,
+  },
 });

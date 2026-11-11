@@ -1,23 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, 
-  FlatList, StyleSheet, Alert, ScrollView 
+  FlatList, StyleSheet, Alert, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://10.154.20.215:5000/produtos';
+const API_URL = 'http://10.154.20.188:5000/produtos';
 
 export default function EstoqueAdm() {
   const router = useRouter();
   const [produtos, setProdutos] = useState([]);
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
-  const [categoria, setCategoria] = useState('');
+  const [categoria, setCategoria] = useState(''); // Estado para categoria (ex: Ferramentas / Equipamentos)
   const [quantidade, setQuantidade] = useState('');
+  const [usuarioId, setUsuarioId] = useState(null);
 
   useEffect(() => {
+    carregarDadosUsuario();
     buscarProdutos();
   }, []);
+
+  const carregarDadosUsuario = async () => {
+    try {
+      const usuarioSalvo = await AsyncStorage.getItem('usuarioLogado');
+      if (usuarioSalvo) {
+        const parsed = JSON.parse(usuarioSalvo);
+        setUsuarioId(parsed.id);
+      }
+    } catch (error) {
+      console.log("Erro ao carregar usuário:", error);
+    }
+  };
 
   const buscarProdutos = async () => {
     try {
@@ -35,6 +50,11 @@ export default function EstoqueAdm() {
       return;
     }
 
+    if (!usuarioId) {
+      Alert.alert("Erro", "ID do administrador não identificado. Faça login novamente.");
+      return;
+    }
+
     try {
       await fetch(API_URL, {
         method: 'POST',
@@ -42,8 +62,9 @@ export default function EstoqueAdm() {
         body: JSON.stringify({
           nome,
           descricao,
-          categoria,
+          categoria: categoria.trim() ? categoria.trim() : 'Geral',
           quantidade: parseInt(quantidade) || 0,
+          usuario_id: usuarioId, // Envia o ID do ADM para registar a movimentação de entrada
         }),
       });
       setNome('');
@@ -60,11 +81,19 @@ export default function EstoqueAdm() {
     const novaQtd = quantidadeAtual + delta;
     if (novaQtd < 0) return;
 
+    if (!usuarioId) {
+      Alert.alert("Erro", "ID do administrador não identificado.");
+      return;
+    }
+
     try {
       await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: novaQtd }),
+        body: JSON.stringify({ 
+          quantidade: novaQtd,
+          usuario_id: usuarioId 
+        }),
       });
       buscarProdutos();
     } catch (error) {
@@ -88,7 +117,7 @@ export default function EstoqueAdm() {
       <View style={{ flex: 2 }}>
         <Text style={styles.nomeProduto}>{item.nome}</Text>
         {item.descricao ? <Text style={styles.descricaoText}>{item.descricao}</Text> : null}
-        {item.categoria ? <Text style={styles.categoria}>{item.categoria}</Text> : null}
+        {item.categoria ? <Text style={styles.categoriaText}>Cat: {item.categoria}</Text> : null}
       </View>
 
       <View style={styles.controleQtd}>
@@ -122,13 +151,13 @@ export default function EstoqueAdm() {
     <View style={styles.container}>
       {/* Navbar Superior */}
       <View style={styles.navbar}>
-        <Text style={styles.navTitulo}>Almoxarifado ADM</Text>
+        <Text style={styles.navTitulo}>Estoque ADM</Text>
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.navVoltar}>Voltar</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Formulário para Adicionar com Descrição */}
+      {/* Formulário para Adicionar com Categoria */}
       <View style={styles.form}>
         <View style={styles.linhaInputs}>
           <TextInput
@@ -143,6 +172,15 @@ export default function EstoqueAdm() {
             keyboardType="numeric"
             value={quantidade}
             onChangeText={setQuantidade}
+          />
+        </View>
+
+        <View style={styles.linhaInputs}>
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder="Categoria (ex: Ferramentas / Equipamentos)"
+            value={categoria}
+            onChangeText={setCategoria}
           />
         </View>
         
@@ -178,12 +216,12 @@ export default function EstoqueAdm() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: { flex: 1, backgroundColor: '#005ea7' },
   navbar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1e293b',
+    backgroundColor: '#192a6b',
     paddingTop: 45,
     paddingBottom: 15,
     paddingHorizontal: 20,
@@ -237,7 +275,7 @@ const styles = StyleSheet.create({
   },
   nomeProduto: { fontSize: 16, fontWeight: '500', color: '#0f172a' },
   descricaoText: { fontSize: 12, color: '#475569', marginTop: 2 },
-  categoria: { fontSize: 11, color: '#94a3b8', marginTop: 1 },
+  categoriaText: { fontSize: 11, color: '#2563eb', fontWeight: '500', marginTop: 1 },
   controleQtd: {
     flex: 1,
     flexDirection: 'row',

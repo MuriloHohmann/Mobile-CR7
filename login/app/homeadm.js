@@ -1,15 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Platform, StatusBar, ImageBackground, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function AdmHome() {
   const router = useRouter();
 
   return (
-    <ScrollView style={styles.body}>
+    <ScrollView style={styles.body} contentContainerStyle={styles.scrollContainer}>
       {/* Navbar do Administrador */}
       <View style={styles.navbar}>
-        {/* Linha superior: Abas principais + Botão Sair */}
         <View style={styles.navTopRow}>
           <View style={styles.containerFluid}>
             <TouchableOpacity 
@@ -42,7 +41,6 @@ export default function AdmHome() {
           </TouchableOpacity>
         </View>
 
-        {/* Linha inferior: Botão de Cadastrar Usuário */}
         <View style={styles.navBottomRow}>
           <TouchableOpacity 
             style={styles.btnCadastrar}
@@ -53,11 +51,24 @@ export default function AdmHome() {
         </View>
       </View>
 
-      {/* Conteúdo do Painel Administrativo */}
-      <View style={styles.content}>
-        <Text style={styles.welcomeText}>Painel de Controle - Administrador</Text>
-        <Text style={styles.subText}>E ESSA FOI A EQUIPE REPRESENTANTE DO NOSSO APP!</Text>
-      </View>
+      {/* Conteúdo com a Imagem de Fundo da Indústria */}
+      <ImageBackground 
+        source={require('../assets/industria.png')} 
+        style={styles.contentBackground}
+        imageStyle={styles.imageStyle}
+      >
+        {/* Overlay para escurecer levemente a foto de fundo e destacar os textos e a foto */}
+        <View style={styles.overlay}>
+          <Text style={styles.welcomeText}>Administrador</Text>
+          <Text style={styles.subText}>E ESSA FOI A EQUIPE REPRESENTANTE DO NOSSO APP!</Text>
+          
+          {/* Foto da equipe posisionada exatamente abaixo dos textos */}
+          <Image 
+            source={require('../assets/us.jpg')} 
+            style={styles.swag} 
+          />
+        </View>
+      </ImageBackground>
     </ScrollView>
   );
 }
@@ -65,7 +76,11 @@ export default function AdmHome() {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#192a6b', // Mudado para combinar com a navbar e evitar flash branco
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    minHeight: '100%', // Força o container de scroll a cobrir toda a altura da tela
   },
   navbar: {
     backgroundColor: '#192a6b',
@@ -132,22 +147,43 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
   },
-  content: {
+  // Estilos corrigidos para eliminar a borda branca
+  contentBackground: {
+    flex: 1, // Faz a imagem de fundo esticar preenchendo todo o espaço disponível
+    width: '100%',
+    justifyContent: 'center',
+  },
+  imageStyle: {
+    resizeMode: 'cover',
+  },
+  overlay: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Escurece o fundo para destacar os textos
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 40,
   },
   welcomeText: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#212529',
-    marginBottom: 10,
+    color: '#ffffff',
+    marginBottom: 8,
     textAlign: 'center',
   },
   subText: {
-    fontSize: 14,
-    color: '#6c757d',
+    fontSize: 13,
+    color: '#f1f1f1',
     textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: 20,
+  },
+  swag: {
+    width: 320,
+    height: 320,
+    borderRadius: 8,
+    resizeMode: 'cover',
+    marginTop: 10,
   },
 });

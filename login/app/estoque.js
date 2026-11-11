@@ -6,7 +6,7 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://10.154.20.215:5000/produtos';
+const API_URL = 'http://10.154.20.188:5000/produtos';
 
 export default function EstoqueComum() {
   const router = useRouter();
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1e293b',
+    backgroundColor: '#192a6b',
     paddingTop: 45,
     paddingBottom: 15,
     paddingHorizontal: 20,
